@@ -118,3 +118,26 @@ async def watch(request: fastapi.Request) -> fastapi.responses.Response:
         
     url = f"https://www.facebook.com/watch/?v={video_id}"
     return await embed_fixer(request, url)
+
+# --- 【在這裡貼上新的程式碼】 ---
+@app.get("/videos/{video_id}")
+async def videos(request: fastapi.Request, video_id: str) -> fastapi.responses.Response:
+    """
+    處理像 facebook.com/xxx/videos/xxx 這種格式的連結。
+    我們其實只需要影片 ID 就夠了。
+    """
+    url = f"https://www.facebook.com/videos/{video_id}"
+    logger.info(f"Handling /videos/ link: {url}")
+    return await embed_fixer(request, url)
+
+# 如果您想要完全匹配 facebook.com/{user_name}/videos/{video_id} 格式，也可以用下面這個更精確的版本
+@app.get("/{user_name}/videos/{video_id}")
+async def user_videos(
+    request: fastapi.Request, user_name: str, video_id: str
+) -> fastapi.responses.Response:
+    """
+    處理 facebook.com/{user_name}/videos/{video_id} 格式的連結。
+    """
+    url = f"https://www.facebook.com/{user_name}/videos/{video_id}"
+    logger.info(f"Handling /{user_name}/videos/ link: {url}")
+    return await embed_fixer(request, url)
