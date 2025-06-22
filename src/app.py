@@ -95,6 +95,16 @@ async def reel(request: fastapi.Request, reel_id: str) -> fastapi.responses.Resp
     url = f"https://www.facebook.com/reel/{reel_id}"
     return await embed_fixer(request, url)
 
+# --- 【在這裡貼上新的程式碼】 ---
+@app.get("/share/p/{post_id}")
+async def share_post(request: fastapi.Request, post_id: str) -> fastapi.responses.Response:
+    """
+    處理像 facebook.com/share/p/xxx 這種格式的一般貼文連結。
+    """
+    # 注意：Facebook 的分享連結通常最後會帶一個斜線
+    url = f"https://www.facebook.com/share/p/{post_id}/"
+    logger.info(f"Handling /share/p/ link: {url}")
+    return await embed_fixer(request, url)
 
 @app.get("/share/v/{video_id}")
 async def share_video(
