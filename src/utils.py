@@ -36,7 +36,9 @@ async def fetch_post_info(client: CachedSession, *, url: str) -> PostInfo:
                     downloads.append(DownloadInfo(
                         url=f['url'],
                         ext=f.get('ext', 'mp4'),
-                        format_id=f.get('format_id')
+                        format_id=f.get('format_id'),
+                        width=f.get('width'),      # <-- 新增這一行
+                        height=f.get('height')     # <-- 新增這一行
                     ))
         
         # 將 yt-dlp 的結果對應到我們的 PostInfo 物件

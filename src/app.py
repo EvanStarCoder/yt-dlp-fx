@@ -55,7 +55,10 @@ async def embed_fixer(request: fastapi.Request, url: str) -> fastapi.responses.R
     # 【核心修改】直接使用從 yt-dlp 獲取的原始影片連結
     video_url = download.url
     logger.info(f"Direct Video URL: {video_url[:100]}...") # 只印出前100個字元
-    print(f"Video URL: {video_url}")
+    
+    video_width = download.width or 1280
+    video_height = download.height or 720
+
     html = f"""
     <html>
     <head>
@@ -68,8 +71,8 @@ async def embed_fixer(request: fastapi.Request, url: str) -> fastapi.responses.R
         <meta property="og:video" content="{video_url}">
         <meta property="og:video:secure_url" content="{video_url}">
         <meta property="og:video:type" content="video/mp4">
-        <meta property="og:video:width" content="1280">
-        <meta property="og:video:height" content="720">
+        <meta property="og:video:width" content="{video_width}">
+        <meta property="og:video:height" content="{video_height}">
     </head>
     </html>
     """
