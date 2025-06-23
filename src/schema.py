@@ -20,3 +20,6 @@ class PostInfo(BaseModel):
     thumbnail: Optional[str] = None
     downloads: List[DownloadInfo] = []
     error: Optional[str] = None
+
+class ImageRequest(BaseModel):
+    image_url: str

@@ -8,7 +8,7 @@ from aiohttp_client_cache.session import CachedSession
 from aiohttp_client_cache.backends.sqlite import SQLiteBackend
 from fake_useragent import UserAgent
 
-from .utils import fetch_post_info
+from .utils import fetch_post_info, dot_art
 # `shorten_url` 也不再需要，但保留 import 不會影響
 
 @asynccontextmanager
@@ -37,7 +37,7 @@ async def embed_fixer(request: fastapi.Request, url: str) -> fastapi.responses.R
         return fastapi.responses.RedirectResponse(url)
 
     try:
-        post = await fetch_post_info(app.state.client, url=url)
+        post = await fetch_post_info(url=url)
     except Exception:
         logger.exception(f"Error fetching post info")
         return fastapi.responses.RedirectResponse(url)
@@ -81,6 +81,16 @@ async def embed_fixer(request: fastapi.Request, url: str) -> fastapi.responses.R
 # ----- 我們不再需要 /proxy 代理端點，將其完全移除 -----
 
 # ----- 所有路由端點保持不變，它們都呼叫 embed_fixer -----
+# --- 【在這裡貼上新的程式碼】 ---
+@app.get("/share/{post_id}")
+async def share_post(request: fastapi.Request, post_id: str) -> fastapi.responses.Response:
+    """
+    處理像 facebook.com/share/p/xxx 這種格式的一般貼文連結。
+    """
+    # 注意：Facebook 的分享連結通常最後會帶一個斜線
+    url = f"https://www.facebook.com/share/{post_id}/"
+    logger.info(f"Handling /share/ link: {url}")
+    return await embed_fixer(request, url)
 
 @app.get("/share/r/{reel_id}")
 async def share_reel(
@@ -151,3 +161,12 @@ async def user_videos(
     url = f"https://www.facebook.com/{user_name}/videos/{video_id}"
     logger.info(f"Handling /{user_name}/videos/ link: {url}")
     return await embed_fixer(request, url)
+
+@app.post("/generate-dot-art/")
+async def generate_dot_art(request: fastapi.Request) -> fastapi.responses.Response:
+    """
+    處理 dot art 生成請求。
+    這個端點會接收一個圖片 URL，然後返回生成的 dot art 圖片。
+    """
+    image_request = await request.json()
+    return await dot_art(image_request)

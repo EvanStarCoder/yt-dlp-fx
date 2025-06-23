@@ -1,1 +1,4 @@
 src/__pycache__/*
+src/facebook_cookies.txt
+cache.db
+facebook_cookies.txt
